@@ -23,7 +23,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
 Visualization Manager:
   Class: ""
   Displays:
@@ -72,12 +72,26 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        camera_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_link_optical:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         front_left_castor_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         front_right_castor_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -129,9 +143,15 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
+        camera_link:
+          Value: true
+        camera_link_optical:
+          Value: true
         front_left_castor_link:
           Value: true
         front_right_castor_link:
+          Value: true
+        imu_link:
           Value: true
         left_wheel_link:
           Value: true
@@ -153,9 +173,14 @@ Visualization Manager:
       Tree:
         base_footprint:
           base_link:
+            camera_link:
+              camera_link_optical:
+                {}
             front_left_castor_link:
               {}
             front_right_castor_link:
+              {}
+            imu_link:
               {}
             left_wheel_link:
               {}
@@ -170,6 +195,40 @@ Visualization Manager:
             toplid_link:
               {}
       Update Interval: 0
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: -999999
+      Min Color: 0; 0; 0
+      Min Intensity: 999999
+      Name: LaserScan
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /scan
+      Use Fixed Frame: true
+      Use rainbow: true
       Value: true
   Enabled: true
   Global Options:
@@ -253,5 +312,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 860
+  X: 720
   Y: 94
