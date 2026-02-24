@@ -18,8 +18,8 @@ class LidarReader(Node):
         # Left: 70-110 (90°)
         left = ranges[70:110].mean()
 
-        # Back: 170-190 (180°)
-        back = ranges[170:190].mean()
+        # Back: 160-200 (180°)
+        back = ranges[160:200].mean()
         
         # Right: 250-290 (270°)
         right = ranges[250:290].mean()
