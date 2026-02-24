@@ -27,6 +27,7 @@ setup(
             'read_lidar = mechabot_scripts.read_lidar:main',
             'read_imu = mechabot_scripts.read_imu:main',
             'read_camera = mechabot_scripts.read_camera:main',
+            'detect_marker = mechabot_scripts.detect_marker:main',
         ],
     },
 )

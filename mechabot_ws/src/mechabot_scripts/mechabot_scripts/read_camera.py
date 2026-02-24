@@ -9,6 +9,7 @@ class CameraViewer(Node):
         super().__init__('camera_viewer')
         self.subscription = self.create_subscription(Image, 'camera/image_raw', self.image_callback, 10)
         self.bridge = CvBridge()
+        print(cv2.__version__)
     
     def image_callback(self, msg):
         # Convert ROS Image message to OpenCV image
