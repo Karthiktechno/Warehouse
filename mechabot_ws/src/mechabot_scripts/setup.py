@@ -29,6 +29,7 @@ setup(
             'read_camera = mechabot_scripts.read_camera:main',
             'detect_marker = mechabot_scripts.detect_marker:main',
             'maze_solver = mechabot_scripts.maze_solver:main',
+            'obstacle_avoidance = mechabot_scripts.obstacle_avoidance:main',
         ],
     },
 )
