@@ -5,7 +5,6 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 import numpy as np
 
-
 class ObstacleAvoider(Node):
     def __init__(self):
         super().__init__('obstacle_avoider')
