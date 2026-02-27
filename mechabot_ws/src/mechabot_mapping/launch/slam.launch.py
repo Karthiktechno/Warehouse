@@ -3,7 +3,7 @@ from launch import LaunchDescription
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
@@ -35,10 +35,10 @@ def generate_launch_description():
         parameters=[
             {"save_map_timeout": 5.0},
             {"use_sim_time": use_sim_time},
-            {"free_thresh_default", "0.196"},
-            {"occupied_thresh_default", "0.65"},
         ],
     )
+
+    #ros2 run nav2_map_server map_saver_cli -f map
 
     slam_toolbox = Node(
         package="slam_toolbox",

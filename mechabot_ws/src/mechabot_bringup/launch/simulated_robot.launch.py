@@ -11,6 +11,13 @@ slam_rviz_config_path = os.path.join(
     'slam.rviz'
 )
 
+# Path to Localization configuration
+localization_rviz_config_path = os.path.join(
+    get_package_share_directory('mechabot_localization'),
+    'rviz',
+    'global_localization.rviz'
+)
+
 def generate_launch_description():
 
     gazebo = IncludeLaunchDescription(
@@ -54,6 +61,14 @@ def generate_launch_description():
         }.items()
     )
 
+    global_localization = IncludeLaunchDescription(
+        os.path.join(
+            get_package_share_directory("mechabot_localization"),
+            "launch", 
+            "global_localization.launch.py"
+            ),
+        )
+
     rviz = Node(
         package='rviz2', 
         executable='rviz2', 
@@ -68,5 +83,6 @@ def generate_launch_description():
         controller,
         joystick,
         slam,
+        # global_localization,
         rviz,
     ])
