@@ -69,20 +69,29 @@ def generate_launch_description():
             ),
         )
 
+    navigation = IncludeLaunchDescription(
+            os.path.join(
+                get_package_share_directory("mechabot_navigation"),
+                "launch",
+                "navigation.launch.py"
+            ),
+        )
+
     rviz = Node(
         package='rviz2', 
         executable='rviz2', 
         name='rviz', 
         output='screen',
-        arguments=['-d', slam_rviz_config_path]  #For Mapping
-        # arguments=['-d', localization_rviz_config_path] #For Localization
+        # arguments=['-d', slam_rviz_config_path]  #For Mapping
+        arguments=['-d', localization_rviz_config_path] #For Localization
     )
 
     return LaunchDescription([
         gazebo,
         controller,
         joystick,
-        slam,
-        # global_localization,
+        # slam,
+        global_localization,
         rviz,
+        # navigation,
     ])
