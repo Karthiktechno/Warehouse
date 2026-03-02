@@ -4,7 +4,6 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
 
-
 class QRDetectorNode(Node):
     def __init__(self):
         super().__init__("qr_detector_node")

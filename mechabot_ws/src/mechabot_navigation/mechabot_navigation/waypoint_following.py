@@ -40,16 +40,12 @@ class WaypointFollowerNode(Node):
 
         # # Go to one pose only
         self.nav.goToPose(goal_pose0)
-        while not self.nav.isTaskComplete():
-                feedback = self.nav.getFeedback()
-                print(feedback)
-                #pass
 
         # Follow Waypoints 
         # waypoints = [goal_pose1, goal_pose2]
         # self.nav.followWaypoints(waypoints)
 
-        while not self.nav.isTaskComplete(): #waits until all waypoints are covered, ie one cycle is complete.
+        while not self.nav.isTaskComplete(): 
             feedback = self.nav.getFeedback()
             print(feedback)
 
