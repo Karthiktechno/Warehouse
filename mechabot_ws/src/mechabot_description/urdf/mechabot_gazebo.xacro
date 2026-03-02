@@ -179,7 +179,7 @@
                     <format>R8G8B8</format>
                 </image>
                 <clip>
-                    <near>0.05</near>
+                    <near>0.02</near>
                     <far>8.0</far>
                 </clip>
             </camera>
