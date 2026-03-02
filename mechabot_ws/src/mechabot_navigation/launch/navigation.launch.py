@@ -9,7 +9,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
 
     use_sim_time = LaunchConfiguration("use_sim_time")
-    lifecycle_nodes = ["controller_server", "planner_server", "smoother_server", "bt_navigator", "behavior_server"]
+    lifecycle_nodes = ["controller_server", "planner_server", "smoother_server", "bt_navigator", "behavior_server", "waypoint_follower"]
 
     mechabot_navigation_pkg = get_package_share_directory("mechabot_navigation")
 
@@ -82,6 +82,17 @@ def generate_launch_description():
         ],
     )
 
+    nav2_waypoint_follower = Node(
+        package="nav2_waypoint_follower",
+        executable="waypoint_follower",
+        name="waypoint_follower",
+        output="screen",
+        parameters=[
+            os.path.join(mechabot_navigation_pkg, "config", "waypoint_follower.yaml"),
+            {"use_sim_time": use_sim_time}
+        ],
+    )
+
     nav2_lifecycle_manager = Node(
         package="nav2_lifecycle_manager",
         executable="lifecycle_manager",
@@ -101,5 +112,6 @@ def generate_launch_description():
         nav2_smoother_server,
         nav2_behaviors,
         nav2_bt_navigator,
+        nav2_waypoint_follower,
         nav2_lifecycle_manager,
     ])

@@ -6,7 +6,23 @@
     <max_step_size>0.01</max_step_size>
   </physics>
 
-  <model name='AirconditionerA_01_001'>
+    <model name='mechabot_dock'>
+        <static>true</static>
+        <include>
+            <uri>model://mechabot_dock</uri>
+        </include>
+        <pose frame=''>1.5 5.2 0 0 0 1.57</pose>
+    </model>
+
+    <model name='marker2'>
+        <static>true</static>
+        <include>
+            <uri>model://marker2</uri> 
+        </include>
+        <pose frame=''>1.5 5.3465 0.05 0 0 -1.57</pose>
+    </model>
+
+    <model name='AirconditionerA_01_001'>
         <static>true</static>
         <include>
             <uri>model://aws_robomaker_residential_AirconditionerA_01</uri>
@@ -21,6 +37,7 @@
         </include>
         <pose frame=''>-2.004656 -5.226610 0.003485 0 -0 0</pose>
 	</model>
+
 	<model name='Ball_01_001'>
         <static>true</static>    
         <include>
