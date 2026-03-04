@@ -30,6 +30,7 @@ setup(
             'detect_marker = mechabot_scripts.detect_marker:main',
             'maze_solver = mechabot_scripts.maze_solver:main',
             'obstacle_avoidance = mechabot_scripts.obstacle_avoidance:main',
+            'docking_with_patrolling = mechabot_scripts.docking_with_patrolling:main',
         ],
     },
 )
