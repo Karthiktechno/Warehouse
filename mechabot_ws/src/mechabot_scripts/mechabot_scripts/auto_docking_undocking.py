@@ -32,11 +32,9 @@ class SimpleDockingNode(Node):
         self.image_width = 640
         
         # Docking threshold
-        self.docking_threshold = 0.15  # 2cm
+        self.docking_threshold = 0.15
         
         self.get_logger().info("Simple Docking Node Initialized!")
-        
-    # ========== CALLBACKS ==========
     
     def camera_callback(self, msg):
         """Detect QR code"""
@@ -56,8 +54,8 @@ class SimpleDockingNode(Node):
                 
                 # Draw visualization
                 cv2.polylines(self.frame, [points], True, (0, 255, 0), 2)
-                cv2.circle(self.frame, (center_x, center_y), 7, (255, 0, 0), 2)
-                cv2.circle(self.frame, (320, center_y), 5, (255, 255, 255), -1)
+                cv2.circle(self.frame, (center_x, center_y), 7, (255, 0, 0), 2) #frame circle
+                cv2.circle(self.frame, (320, center_y), 5, (255, 255, 255), -1) #qr circle
                 
                 if data:
                     cv2.putText(self.frame, f'QR: {data}', (50, 50), 
@@ -85,8 +83,6 @@ class SimpleDockingNode(Node):
         front = front[~np.isnan(front)]  # Remove NaN
         if len(front) > 0:
             self.front_distance = np.mean(front)
-    
-    # ========== MOVEMENT FUNCTIONS ==========
     
     def velocity_publisher(self, x, z):
         """Publish velocity"""
@@ -163,7 +159,7 @@ class SimpleDockingNode(Node):
         self.get_logger().info("Aligned with QR!")
     
     def dock_forward(self):
-        """Move forward until docked (distance < 2cm)"""
+        """Move forward until docked (distance < 0.15m)"""
         self.get_logger().info("Docking forward...")
         
         while True:
@@ -187,16 +183,14 @@ class SimpleDockingNode(Node):
         self.velocity_publisher(0.0, 0.0)
         self.get_logger().info("DOCKED SUCCESSFULLY!")
     
-    # ========== MAIN SEQUENCE ==========
-    
     def run_sequence(self):
         """Run complete undocking and docking sequence"""
         
         self.get_logger().info("===== STARTING SEQUENCE =====")
         time.sleep(2)
         
-        # Step 1: Undock - Move backward 2 meters
-        self.get_logger().info("\n[STEP 1] Undocking - Moving backward 2m")
+        # Step 1: Undock - Move backward 0.2 meters
+        self.get_logger().info("\n[STEP 1] Undocking - Moving backward 0.2m")
         self.move_distance(-0.2, speed=0.2)
         time.sleep(1)
         
@@ -226,12 +220,11 @@ class SimpleDockingNode(Node):
         self.align_with_qr()
         time.sleep(1)
         
-        # Step 5: Dock forward until LiDAR < 2cm
-        self.get_logger().info("\n[STEP 5] Docking forward until distance < 2cm")
+        # Step 5: Dock forward until LiDAR < 0.15m
+        self.get_logger().info("\n[STEP 5] Docking forward until distance < 0.15m")
         self.dock_forward()
         
         self.get_logger().info("\n===== SEQUENCE COMPLETE =====")
-
 
 def main(args=None):
     rclpy.init(args=args)
@@ -249,7 +242,6 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

@@ -44,8 +44,6 @@ class SimpleDockingNode(Node):
         self.initial_yaw = 0.0
         
         self.get_logger().info("Simple Docking Node Initialized!")
-        
-    # ========== CALLBACKS ==========
     
     def camera_callback(self, msg):
         """Detect QR code"""
@@ -94,8 +92,6 @@ class SimpleDockingNode(Node):
         front = front[~np.isnan(front)]  # Remove NaN
         if len(front) > 0:
             self.front_distance = np.mean(front)
-    
-    # ========== MOVEMENT FUNCTIONS ==========
     
     def velocity_publisher(self, x, z):
         """Publish velocity"""
@@ -196,7 +192,6 @@ class SimpleDockingNode(Node):
         self.velocity_publisher(0.0, 0.0)
         self.get_logger().info("DOCKED SUCCESSFULLY!")
     
-    # ========== NAV2 FUNCTIONS ==========
     
     def create_pose_stamped(self, x, y, yaw):
         """Create a PoseStamped message"""
@@ -255,7 +250,6 @@ class SimpleDockingNode(Node):
         self.get_logger().info(f"Waypoints result: {result}")
         self.get_logger().info("All waypoints completed!")
     
-    # ========== MAIN SEQUENCE ==========
     
     def run_sequence(self):
         """Run complete undocking, navigation, and docking sequence"""
@@ -271,8 +265,8 @@ class SimpleDockingNode(Node):
         self.set_initial_pose(self.initial_x, self.initial_y, self.initial_yaw)
         time.sleep(2)
         
-        # Step 1: Undock - Move backward 2 meters
-        self.get_logger().info("\n[STEP 1] Undocking - Moving backward 2m")
+        # Step 1: Undock - Move backward 0.2 meters
+        self.get_logger().info("\n[STEP 1] Undocking - Moving backward 0.2m")
         self.move_distance(-0.2, speed=0.2)
         time.sleep(1)
         
@@ -290,28 +284,23 @@ class SimpleDockingNode(Node):
         # Define your waypoints here (x, y, yaw)
         waypoints = [
             (5.0, 1.0, 0.0),      # Waypoint 1
-            # (0.0, 3.0, 0.0),      # Waypoint 2
+            (0.0, 3.0, 0.0),      # Waypoint 2
         ]
         
         self.follow_waypoints(waypoints)
         time.sleep(2)
         
-        # Step 4: Return to pre-dock position (2m away from dock)
+        # Step 4: Return to pre-dock position (0.2m away from dock)
         self.get_logger().info("\n[STEP 4] Returning to pre-dock position")
         pre_dock_x = self.initial_x + 0.05
-        pre_dock_y = self.initial_y - 0.2  # 0.3m in front of dock
+        pre_dock_y = self.initial_y   # 0.2m in front of dock
         pre_dock_yaw = self.initial_yaw
         
         self.go_to_waypoint(pre_dock_x, pre_dock_y, pre_dock_yaw)
         time.sleep(2)
         
-        # Step 5: Rotate back to 0 degrees (reference) if needed
-        # self.get_logger().info("\n[STEP 5] Final orientation adjustment")
-        # self.rotate_to_angle(self.initial_yaw)
-        # time.sleep(1)
-        
-        # Step 6: Detect and align with QR code
-        self.get_logger().info("\n[STEP 6] Detecting and aligning with QR code")
+        # Step 5: Detect and align with QR code
+        self.get_logger().info("\n[STEP 5] Detecting and aligning with QR code")
         
         # Wait for QR detection
         self.get_logger().info("Waiting for QR detection...")
@@ -323,7 +312,7 @@ class SimpleDockingNode(Node):
         self.align_with_qr()
         time.sleep(1)
         
-        # Step 7: Dock forward until LiDAR < threshold
+        # Step 6: Dock forward until LiDAR < threshold
         self.get_logger().info("\n[STEP 7] Docking forward")
         self.dock_forward()
         
