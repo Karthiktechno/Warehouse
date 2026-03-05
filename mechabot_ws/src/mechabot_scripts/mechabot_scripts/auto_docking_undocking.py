@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist, PoseStamped
+from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Image, Imu, LaserScan
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-from tf_transformations import euler_from_quaternion, quaternion_from_euler
-from nav2_simple_commander.robot_navigator import BasicNavigator
+from tf_transformations import euler_from_quaternion
 import time
 
 class SimpleDockingNode(Node):
@@ -17,9 +16,6 @@ class SimpleDockingNode(Node):
         # CV Bridge for camera
         self.bridge = CvBridge()
         self.qr_decoder = cv2.QRCodeDetector()
-        
-        # Nav2 Navigator
-        self.nav = BasicNavigator()
         
         # Publishers and Subscribers
         self.vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -36,12 +32,7 @@ class SimpleDockingNode(Node):
         self.image_width = 640
         
         # Docking threshold
-        self.docking_threshold = 0.15  # 15cm
-        
-        # Store initial position for return
-        self.initial_x = 0.0
-        self.initial_y = 0.0
-        self.initial_yaw = 0.0
+        self.docking_threshold = 0.15  # 2cm
         
         self.get_logger().info("Simple Docking Node Initialized!")
         
@@ -172,7 +163,7 @@ class SimpleDockingNode(Node):
         self.get_logger().info("Aligned with QR!")
     
     def dock_forward(self):
-        """Move forward until docked (distance < threshold)"""
+        """Move forward until docked (distance < 2cm)"""
         self.get_logger().info("Docking forward...")
         
         while True:
@@ -196,79 +187,12 @@ class SimpleDockingNode(Node):
         self.velocity_publisher(0.0, 0.0)
         self.get_logger().info("DOCKED SUCCESSFULLY!")
     
-    # ========== NAV2 FUNCTIONS ==========
-    
-    def create_pose_stamped(self, x, y, yaw):
-        """Create a PoseStamped message"""
-        q_x, q_y, q_z, q_w = quaternion_from_euler(0.0, 0.0, yaw)
-        pose = PoseStamped()
-        pose.header.frame_id = 'map'
-        pose.header.stamp = self.nav.get_clock().now().to_msg()
-        pose.pose.position.x = x
-        pose.pose.position.y = y
-        pose.pose.position.z = 0.0
-        pose.pose.orientation.x = q_x
-        pose.pose.orientation.y = q_y
-        pose.pose.orientation.z = q_z
-        pose.pose.orientation.w = q_w
-        return pose
-    
-    def set_initial_pose(self, x, y, yaw):
-        """Set initial pose for Nav2"""
-        self.get_logger().info(f"Setting initial pose: x={x}, y={y}, yaw={yaw}")
-        initial_pose = self.create_pose_stamped(x, y, yaw)
-        self.nav.setInitialPose(initial_pose)
-        self.nav.waitUntilNav2Active()
-        self.get_logger().info("Nav2 is active!")
-    
-    def go_to_waypoint(self, x, y, yaw):
-        """Navigate to a single waypoint"""
-        self.get_logger().info(f"Going to waypoint: x={x}, y={y}, yaw={yaw}")
-        
-        goal_pose = self.create_pose_stamped(x, y, yaw)
-        self.nav.goToPose(goal_pose)
-        
-        while not self.nav.isTaskComplete():
-            feedback = self.nav.getFeedback()
-            rclpy.spin_once(self, timeout_sec=0.1)
-        
-        result = self.nav.getResult()
-        self.get_logger().info(f"Navigation result: {result}")
-        self.get_logger().info("Waypoint reached!")
-    
-    def follow_waypoints(self, waypoints):
-        """Follow multiple waypoints"""
-        self.get_logger().info(f"Following {len(waypoints)} waypoints...")
-        
-        waypoint_poses = []
-        for wp in waypoints:
-            pose = self.create_pose_stamped(wp[0], wp[1], wp[2])
-            waypoint_poses.append(pose)
-        
-        self.nav.followWaypoints(waypoint_poses)
-        
-        while not self.nav.isTaskComplete():
-            feedback = self.nav.getFeedback()
-            rclpy.spin_once(self, timeout_sec=0.1)
-        
-        result = self.nav.getResult()
-        self.get_logger().info(f"Waypoints result: {result}")
-        self.get_logger().info("All waypoints completed!")
-    
     # ========== MAIN SEQUENCE ==========
     
     def run_sequence(self):
-        """Run complete undocking, navigation, and docking sequence"""
+        """Run complete undocking and docking sequence"""
         
         self.get_logger().info("===== STARTING SEQUENCE =====")
-        time.sleep(2)
-        
-        # Set initial pose (robot starts in dock)
-        self.get_logger().info("\n[SETUP] Setting initial pose")
-        self.initial_x = 1.5
-        self.initial_y = 5.18
-        self.initial_yaw = 1.57
-        self.set_initial_pose(self.initial_x, self.initial_y, self.initial_yaw)
         time.sleep(2)
         
         # Step 1: Undock - Move backward 2 meters
@@ -284,34 +208,13 @@ class SimpleDockingNode(Node):
         self.rotate_to_angle(target_yaw)
         time.sleep(1)
         
-        # Step 3: Navigate to waypoints
-        self.get_logger().info("\n[STEP 3] Navigating to waypoints")
+        # Step 3: Rotate back to 0 degrees (reference)
+        self.get_logger().info("\n[STEP 3] Rotating back to 0 degrees (reference)")
+        self.rotate_to_angle(0.0)
+        time.sleep(1)
         
-        # Define your waypoints here (x, y, yaw)
-        waypoints = [
-            (5.0, 1.0, 0.0),      # Waypoint 1
-            # (0.0, 3.0, 0.0),      # Waypoint 2
-        ]
-        
-        self.follow_waypoints(waypoints)
-        time.sleep(2)
-        
-        # Step 4: Return to pre-dock position (2m away from dock)
-        self.get_logger().info("\n[STEP 4] Returning to pre-dock position")
-        pre_dock_x = self.initial_x + 0.05
-        pre_dock_y = self.initial_y - 0.2  # 0.3m in front of dock
-        pre_dock_yaw = self.initial_yaw
-        
-        self.go_to_waypoint(pre_dock_x, pre_dock_y, pre_dock_yaw)
-        time.sleep(2)
-        
-        # Step 5: Rotate back to 0 degrees (reference) if needed
-        # self.get_logger().info("\n[STEP 5] Final orientation adjustment")
-        # self.rotate_to_angle(self.initial_yaw)
-        # time.sleep(1)
-        
-        # Step 6: Detect and align with QR code
-        self.get_logger().info("\n[STEP 6] Detecting and aligning with QR code")
+        # Step 4: Detect and align with QR code
+        self.get_logger().info("\n[STEP 4] Detecting and aligning with QR code")
         
         # Wait for QR detection
         self.get_logger().info("Waiting for QR detection...")
@@ -323,8 +226,8 @@ class SimpleDockingNode(Node):
         self.align_with_qr()
         time.sleep(1)
         
-        # Step 7: Dock forward until LiDAR < threshold
-        self.get_logger().info("\n[STEP 7] Docking forward")
+        # Step 5: Dock forward until LiDAR < 2cm
+        self.get_logger().info("\n[STEP 5] Docking forward until distance < 2cm")
         self.dock_forward()
         
         self.get_logger().info("\n===== SEQUENCE COMPLETE =====")

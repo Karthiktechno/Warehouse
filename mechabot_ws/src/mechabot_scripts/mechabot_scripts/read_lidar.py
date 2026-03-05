@@ -13,18 +13,20 @@ class LidarReader(Node):
         ranges = np.array(msg.ranges)
         
         # Front: combine 340-360 and 0-20 (0°)
-        front = np.concatenate([ranges[-20:], ranges[:20]]).mean()
+        # front = np.concatenate([ranges[-20:], ranges[:20]]).mean()
+        front = np.concatenate([ranges[-1:], ranges[:1]]).mean()
         
         # Left: 70-110 (90°)
-        left = ranges[70:110].mean()
+        # left = ranges[70:110].mean()
 
         # Back: 160-200 (180°)
-        back = ranges[160:200].mean()
+        # back = ranges[160:200].mean()
         
         # Right: 250-290 (270°)
-        right = ranges[250:290].mean()
+        # right = ranges[250:290].mean()
         
-        print(f"Front: {front:.2f}m | Left: {left:.2f}m | Right: {right:.2f}m | Back: {back:.2f}m")
+        # print(f"Front: {front:.2f}m | Left: {left:.2f}m | Right: {right:.2f}m | Back: {back:.2f}m")
+        print(front)
 
 def main(args=None):
     rclpy.init(args=args)

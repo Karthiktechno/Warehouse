@@ -93,5 +93,5 @@ def generate_launch_description():
         # slam,
         global_localization,
         rviz,
-        # navigation,
+        navigation,
     ])
