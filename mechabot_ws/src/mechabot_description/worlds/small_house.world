@@ -19,7 +19,7 @@
         <include>
             <uri>model://marker2</uri> 
         </include>
-        <pose frame=''>1.5 5.3465 0.06 0 0 -1.57</pose>
+        <pose frame=''>1.5 5.3465 0.02 0 0 -1.57</pose>
     </model>
 
     <model name='AirconditionerA_01_001'>
