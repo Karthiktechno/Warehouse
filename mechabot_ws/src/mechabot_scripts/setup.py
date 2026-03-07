@@ -32,6 +32,7 @@ setup(
             'obstacle_avoidance = mechabot_scripts.obstacle_avoidance:main',
             'auto_docking_undocking = mechabot_scripts.auto_docking_undocking:main',
             'docking_with_patrolling = mechabot_scripts.docking_with_patrolling:main',
+            'auto_docking_with_battery = mechabot_scripts.auto_docking_with_battery:main',
         ],
     },
 )
