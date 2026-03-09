@@ -34,7 +34,7 @@ public:
   hardware_interface::return_type write(const rclcpp::Time &, const rclcpp::Duration &) override;
 
 private:
-  LibSerial::SerialPort teensy_;
+  LibSerial::SerialPort esp_;
   std::string port_;
   std::vector<double> velocity_commands_;
   std::vector<double> position_states_;

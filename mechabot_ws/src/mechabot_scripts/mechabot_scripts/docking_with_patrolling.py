@@ -265,7 +265,7 @@ class SimpleDockingNode(Node):
         self.set_initial_pose(self.initial_x, self.initial_y, self.initial_yaw)
         time.sleep(2)
         
-        # Step 1: Undock - Move backward 0.2 meters
+        # Step 1: Undock - Move backward 0.6 meters
         self.get_logger().info("\n[STEP 1] Undocking - Moving backward 0.2m")
         self.move_distance(-0.6, speed=0.2)
         time.sleep(1)
@@ -290,7 +290,7 @@ class SimpleDockingNode(Node):
         self.follow_waypoints(waypoints)
         time.sleep(2)
         
-        # Step 4: Return to pre-dock position (0.2m away from dock)
+        # Step 4: Return to pre-dock position (0.6m away from dock)
         self.get_logger().info("\n[STEP 4] Returning to pre-dock position")
         pre_dock_x = self.initial_x
         pre_dock_y = self.initial_y - 0.5  

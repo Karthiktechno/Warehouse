@@ -306,7 +306,7 @@ class SimpleDockingNode(Node):
         self.set_initial_pose(self.initial_x, self.initial_y, self.initial_yaw)
         time.sleep(2)
         
-        # Step 1: Undock - Move backward 0.2 meters
+        # Step 1: Undock - Move backward 0.6 meters
         self.get_logger().info("\n[STEP 1] Undocking - Moving backward 0.2m")
         self.move_distance(-0.6, speed=0.2)
         time.sleep(1)

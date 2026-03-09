@@ -2,7 +2,6 @@
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <pluginlib/class_list_macros.hpp>
 
-
 namespace mechabot_firmware
 {
 MechabotInterface::MechabotInterface()
@@ -215,3 +214,5 @@ hardware_interface::return_type MechabotInterface::write(const rclcpp::Time &,
 }  // namespace Mechabot_firmware
 
 PLUGINLIB_EXPORT_CLASS(mechabot_firmware::MechabotInterface, hardware_interface::SystemInterface)
+
+//"rp05.30,ln12.45,"
