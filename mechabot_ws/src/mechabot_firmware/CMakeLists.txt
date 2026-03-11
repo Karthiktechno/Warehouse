@@ -56,6 +56,7 @@ install(PROGRAMS
   ${PROJECT_NAME}/mpu6050_driver.py
   ${PROJECT_NAME}/hcsr04_driver.py
   ${PROJECT_NAME}/16x2lcd_driver.py
+  ${PROJECT_NAME}/camera_viewer.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
