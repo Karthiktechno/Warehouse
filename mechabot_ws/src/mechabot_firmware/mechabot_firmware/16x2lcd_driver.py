@@ -138,7 +138,7 @@ def main(args=None):
     try:
         node = LCDVelocityDisplay()
     except Exception as e:
-        print(f"[FATAL] Failed to start node: {e}")
+        print(f"Failed to start node: {e}")
         rclpy.shutdown()
         return
 

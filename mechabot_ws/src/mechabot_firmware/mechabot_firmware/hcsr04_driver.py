@@ -16,7 +16,7 @@ class DistancePublisher(Node):
         super().__init__('ultrasonic_publisher')
 
         # Distance publisher
-        self.distance_pub = self.create_publisher(Float32, 'obstacle_distance', 10)
+        self.distance_pub = self.create_publisher(Float32, 'ultrasonic_distance', 10)
 
         # Timer to publish data at 5Hz
         self.timer = self.create_timer(0.2, self.measure_and_publish_distance)
@@ -101,7 +101,7 @@ def main(args=None):
     try:
         node = DistancePublisher()
     except Exception as e:
-        print(f"[FATAL] Failed to start node: {e}")
+        print(f"Failed to start node: {e}")
         rclpy.shutdown()
         return
 
