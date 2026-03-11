@@ -3,7 +3,7 @@ import rclpy.time
 import smbus
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import qos_profile_sensor_data #Reliability Best Effort Durability Volatile History Keep Last Depth 5
 from sensor_msgs.msg import Imu
 from collections import deque  # Added for moving average filter
 
