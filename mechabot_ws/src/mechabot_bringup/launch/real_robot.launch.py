@@ -9,46 +9,142 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
+    use_slam = LaunchConfiguration("use_slam")
     serial_port = LaunchConfiguration("serial_port") #Port for RPLidar
+    map_name = LaunchConfiguration("map_name")
+
+    use_slam_arg = DeclareLaunchArgument(
+        "use_slam",
+        default_value="false"
+    )
 
     serial_port_arg = DeclareLaunchArgument(
         "serial_port",
-        default_value="/dev/ttyUSB0", 
-        description="Serial port for RPLIDAR"
+        default_value="/dev/ttyUSB1", 
+        description="Serial port for ESP32"
     )
 
-    laser_driver = Node(
+    map_name_arg = DeclareLaunchArgument(
+        "map_name",
+        default_value="myroom"
+    )
+
+
+    hardware_interface = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory("mechabot_firmware"),
+                "launch",
+                "hardware_interface.launch.py"
+            )
+        ),
+        launch_arguments={
+            "serial_port": serial_port #Passes serial port to urdf
+        }.items()
+    )
+
+    lidar_driver = Node(
         package="rplidar_ros",
         executable="rplidar_node",
         name="rplidar_node",
         parameters=[{
             "channel_type": "serial",
-            "serial_port": serial_port,
+            "serial_port": "/dev/ttyUSB0",
             "serial_baudrate": 115200,
             "frame_id": "lidar_link",
             "inverted": False,
             "angle_compensate": True,
-            "scan_mode": "Sensitivity", #Standard, #Express, #Stability
+            "scan_mode": "Sensitivity",
             "range_min": 0.05
         }],
         output="screen"
     )
 
-    rviz = Node(
-        package="rviz2",
-        executable="rviz2",
-        arguments=["-d", os.path.join(
-                get_package_share_directory("mechabot_localization"),
-                "rviz",
-                "global_localization.rviz"
+
+    controller = IncludeLaunchDescription(
+        os.path.join(
+            get_package_share_directory("mechabot_controller"),
+            "launch",
+            "controller.launch.py"
+        ),
+    )
+
+    joystick = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory("mechabot_controller"),
+                "launch",
+                "joystick.launch.py"
             )
-        ],
-        output="screen",
-        parameters=[{"use_sim_time": False}]
+        ),
+        launch_arguments={"use_sim_time": "False"}.items()
+    )
+
+    imu_driver_node = Node(
+        package="mechabot_firmware",
+        executable="mpu6050_driver.py",
+        output="screen"
+    )
+
+    lcd_driver_node = Node(
+        package="mechabot_firmware",
+        executable="16x2lcd_driver.py",
+        output="screen"
+    )
+
+    ultrasonic_driver_node = Node(
+        package="mechabot_firmware",
+        executable="hcsr04_driver.py",
+        output="screen"
+    )
+
+    localization = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory("mechabot_localization"),
+                "launch",
+                "global_localization.launch.py"
+            )
+        ),
+        launch_arguments={
+            "use_sim_time": "False",
+            "map_name": map_name
+        }.items(),
+        condition=UnlessCondition(use_slam)
+    )
+
+    navigation = IncludeLaunchDescription(
+        os.path.join(
+            get_package_share_directory("mechabot_navigation"),
+            "launch",
+            "navigation.launch.py"
+        ),
+    )
+
+    slam = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory("mechabot_mapping"),
+                "launch",
+                "slam.launch.py"
+            )
+        ),
+        launch_arguments={"use_sim_time": "False"}.items(),
+        condition=IfCondition(use_slam)
     )
 
     return LaunchDescription([
+        use_slam_arg,
         serial_port_arg,
-        laser_driver,
-        rviz,
+        map_name_arg,
+        hardware_interface,
+        lidar_driver,
+        controller,
+        joystick,
+        imu_driver_node,
+        lcd_driver_node,
+        ultrasonic_driver_node,
+        localization,
+        slam,
+        navigation,
     ])

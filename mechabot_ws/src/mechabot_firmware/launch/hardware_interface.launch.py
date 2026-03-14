@@ -11,8 +11,8 @@ def generate_launch_description():
 
     serial_port_arg = DeclareLaunchArgument(
         'serial_port',
-        default_value='/dev/ttyUSB0',
-        description='Serial port to use for RPLIDAR',
+        default_value='/dev/ttyUSB1',
+        description='Serial port to use for ESP32',
     )
 
     robot_description = ParameterValue(

@@ -3,9 +3,20 @@
 
     <ros2_control name="RobotSystem" type="system">
 
-        <hardware>
-            <plugin>ign_ros2_control/IgnitionSystem</plugin>
-        </hardware>
+        <!-- ros2_control Gazebo -->
+        <xacro:if value="$(arg is_sim)">
+            <hardware>
+                <plugin>ign_ros2_control/IgnitionSystem</plugin>
+            </hardware>
+        </xacro:if>
+
+        <!-- ros2_control Real Robot -->
+        <xacro:unless value="$(arg is_sim)">
+            <hardware>
+                <plugin>mechabot_firmware/MechabotInterface</plugin>
+                <param name="port">/dev/ttyUSB1</param>
+            </hardware>
+        </xacro:unless>
 
         <joint name="right_wheel_joint">
             <command_interface name="velocity">

@@ -69,11 +69,16 @@ void setup() {
 
   rightMotor.SetMode(AUTOMATIC);
   leftMotor.SetMode(AUTOMATIC);
+  // rightMotor.SetOutputLimits(0, 150);  
+  // leftMotor.SetOutputLimits(0, 150);   
+
   Serial.begin(115200);
 
   // Init encoders
-  pinMode(right_encoder_phaseB, INPUT);
-  pinMode(left_encoder_phaseB, INPUT);
+  pinMode(right_encoder_phaseA, INPUT_PULLUP);
+  pinMode(right_encoder_phaseB, INPUT_PULLUP);
+  pinMode(left_encoder_phaseA, INPUT_PULLUP);
+  pinMode(left_encoder_phaseB, INPUT_PULLUP);
   // Set Callback for Wheel Encoders Pulse
   attachInterrupt(digitalPinToInterrupt(right_encoder_phaseA), rightEncoderCallback, RISING);
   attachInterrupt(digitalPinToInterrupt(left_encoder_phaseA), leftEncoderCallback, RISING);
@@ -102,36 +107,36 @@ void loop() {
     // Positive direction
     else if(chr == 'p')
     {
-      if(is_right_wheel_cmd && !is_right_wheel_forward)
+      if(is_right_wheel_cmd)
       {
-        // change the direction of the rotation
-        digitalWrite(L298N_in1, HIGH - digitalRead(L298N_in1));
-        digitalWrite(L298N_in2, HIGH - digitalRead(L298N_in2));
+        // Right motor forward (using in3, in4)
+        digitalWrite(L298N_in3, HIGH);
+        digitalWrite(L298N_in4, LOW);
         is_right_wheel_forward = true;
       }
-      else if(is_left_wheel_cmd && !is_left_wheel_forward)
+      else if(is_left_wheel_cmd)
       {
-        // change the direction of the rotation
-        digitalWrite(L298N_in3, HIGH - digitalRead(L298N_in3));
-        digitalWrite(L298N_in4, HIGH - digitalRead(L298N_in4));
+        // Left motor forward (using in1, in2)
+        digitalWrite(L298N_in1, HIGH);
+        digitalWrite(L298N_in2, LOW);
         is_left_wheel_forward = true;
       }
     }
     // Negative direction
     else if(chr == 'n')
     {
-      if(is_right_wheel_cmd && is_right_wheel_forward)
+      if(is_right_wheel_cmd)
       {
-        // change the direction of the rotation
-        digitalWrite(L298N_in1, HIGH - digitalRead(L298N_in1));
-        digitalWrite(L298N_in2, HIGH - digitalRead(L298N_in2));
+        // Right motor backward (using in3, in4)
+        digitalWrite(L298N_in3, LOW);
+        digitalWrite(L298N_in4, HIGH);
         is_right_wheel_forward = false;
       }
-      else if(is_left_wheel_cmd && is_left_wheel_forward)
+      else if(is_left_wheel_cmd)
       {
-        // change the direction of the rotation
-        digitalWrite(L298N_in3, HIGH - digitalRead(L298N_in3));
-        digitalWrite(L298N_in4, HIGH - digitalRead(L298N_in4));
+        // Left motor backward (using in1, in2)
+        digitalWrite(L298N_in1, LOW);
+        digitalWrite(L298N_in2, HIGH);
         is_left_wheel_forward = false;
       }
     }
@@ -171,8 +176,8 @@ void loop() {
   unsigned long current_millis = millis();
   if(current_millis - last_millis >= interval)
   {
-    right_wheel_meas_vel = (10 * right_encoder_counter * (60.0/1210.0)) * 0.10472;
-    left_wheel_meas_vel = (10 * left_encoder_counter * (60.0/1210.0)) * 0.10472;
+    right_wheel_meas_vel = (10 * right_encoder_counter * (60.0/370.0)) * 0.10472;
+    left_wheel_meas_vel = (10 * left_encoder_counter * (60.0/370.0)) * 0.10472;
     
     rightMotor.Compute();
     leftMotor.Compute();
@@ -193,8 +198,8 @@ void loop() {
     right_encoder_counter = 0;
     left_encoder_counter = 0;
 
-    analogWrite(L298N_enA, right_wheel_cmd);
-    analogWrite(L298N_enB, left_wheel_cmd);
+    analogWrite(L298N_enA, left_wheel_cmd);
+    analogWrite(L298N_enB, right_wheel_cmd);
   }
 }
 
