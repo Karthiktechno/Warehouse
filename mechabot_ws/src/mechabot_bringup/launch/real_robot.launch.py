@@ -15,12 +15,12 @@ def generate_launch_description():
 
     use_slam_arg = DeclareLaunchArgument(
         "use_slam",
-        default_value="false"
+        default_value="true"
     )
 
     serial_port_arg = DeclareLaunchArgument(
         "serial_port",
-        default_value="/dev/ttyUSB1", 
+        default_value="/dev/ttyUSB0", 
         description="Serial port for ESP32"
     )
 
@@ -83,19 +83,16 @@ def generate_launch_description():
     imu_driver_node = Node(
         package="mechabot_firmware",
         executable="mpu6050_driver.py",
-        output="screen"
     )
 
     lcd_driver_node = Node(
         package="mechabot_firmware",
         executable="16x2lcd_driver.py",
-        output="screen"
     )
 
     ultrasonic_driver_node = Node(
         package="mechabot_firmware",
         executable="hcsr04_driver.py",
-        output="screen"
     )
 
     localization = IncludeLaunchDescription(

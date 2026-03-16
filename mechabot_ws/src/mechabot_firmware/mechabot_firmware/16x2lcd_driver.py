@@ -32,7 +32,7 @@ class LCDVelocityDisplay(Node):
         # Subscribe to cmd_vel topic
         self.cmd_vel_sub = self.create_subscription(
             Twist,
-            'cmd_vel',
+            '/wheel_controller/cmd_vel_unstamped',
             self.cmd_vel_callback,
             10
         )

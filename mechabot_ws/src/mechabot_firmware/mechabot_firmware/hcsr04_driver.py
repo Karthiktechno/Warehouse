@@ -81,7 +81,7 @@ class DistancePublisher(Node):
             msg.data = float(filtered_distance) / 100.0  # convert cm to meters
             
             # Print the distance data
-            self.get_logger().info(f"Ultrasonic Distance: {msg.data:.3f} m ({filtered_distance:.2f} cm)")
+            # self.get_logger().info(f"Ultrasonic Distance: {msg.data:.3f} m ({filtered_distance:.2f} cm)")
             
             self.distance_pub.publish(msg)
 
