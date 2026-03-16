@@ -19,7 +19,8 @@ class SimpleDockingNode(Node):
         
         # Publishers and Subscribers
         self.vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.cam_sub = self.create_subscription(Image, "/camera/image_raw", self.camera_callback, 10)
+        # self.cam_sub = self.create_subscription(Image, "/camera/image_raw", self.camera_callback, 10) #SIM
+        self.cam_sub = self.create_subscription(Image, "/image_raw", self.camera_callback, 10) #REAL
         self.imu_sub = self.create_subscription(Imu, '/imu/out', self.imu_callback, 10)
         self.lidar_sub = self.create_subscription(LaserScan, 'scan', self.lidar_callback, 10)
         

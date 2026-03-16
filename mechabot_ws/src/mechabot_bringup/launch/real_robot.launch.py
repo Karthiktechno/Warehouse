@@ -15,12 +15,12 @@ def generate_launch_description():
 
     use_slam_arg = DeclareLaunchArgument(
         "use_slam",
-        default_value="true"
+        default_value="false"
     )
 
     serial_port_arg = DeclareLaunchArgument(
         "serial_port",
-        default_value="/dev/ttyUSB0", 
+        default_value="/dev/ttyUSB1", 
         description="Serial port for ESP32"
     )
 
@@ -138,8 +138,8 @@ def generate_launch_description():
         controller,
         joystick,
         imu_driver_node,
-        # lcd_driver_node,
-        # ultrasonic_driver_node,
+        lcd_driver_node,
+        ultrasonic_driver_node,
         localization,
         slam,
         navigation,

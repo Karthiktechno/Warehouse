@@ -9,6 +9,7 @@ import numpy as np
 from tf_transformations import euler_from_quaternion, quaternion_from_euler
 from nav2_simple_commander.robot_navigator import BasicNavigator
 import time
+from rclpy.qos import qos_profile_sensor_data
 
 class SimpleDockingNode(Node):
     def __init__(self):
@@ -23,8 +24,10 @@ class SimpleDockingNode(Node):
         
         # Publishers and Subscribers
         self.vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.cam_sub = self.create_subscription(Image, "/camera/image_raw", self.camera_callback, 10)
-        self.imu_sub = self.create_subscription(Imu, '/imu/out', self.imu_callback, 10)
+        # self.cam_sub = self.create_subscription(Image, "/camera/image_raw", self.camera_callback, 10) #SIM
+        self.cam_sub = self.create_subscription(Image, "/image_raw", self.camera_callback, 10) #REAL
+        # self.imu_sub = self.create_subscription(Imu, '/imu/out', self.imu_callback, 10) #SIM
+        self.imu_sub = self.create_subscription(Imu, '/imu/out', self.imu_callback, qos_profile_sensor_data) #REAL
         self.lidar_sub = self.create_subscription(LaserScan, 'scan', self.lidar_callback, 10)
         
         # State variables
@@ -259,9 +262,9 @@ class SimpleDockingNode(Node):
         
         # Set initial pose (robot starts in dock)
         self.get_logger().info("\n[SETUP] Setting initial pose")
-        self.initial_x = 1.5
-        self.initial_y = 5.18
-        self.initial_yaw = 1.57
+        self.initial_x = 0.0 #1.5
+        self.initial_y = 0.4 #5.18
+        self.initial_yaw = 0.0 #1.57
         self.set_initial_pose(self.initial_x, self.initial_y, self.initial_yaw)
         time.sleep(2)
         
@@ -275,7 +278,7 @@ class SimpleDockingNode(Node):
         initial_yaw = self.yaw
         target_yaw = initial_yaw + np.pi  # Add 180 degrees
         target_yaw = np.arctan2(np.sin(target_yaw), np.cos(target_yaw))  # Normalize
-        self.rotate_to_angle(target_yaw)
+        self.rotate_to_angle(-target_yaw) #-ve for HW
         time.sleep(1)
         
         # Step 3: Navigate to waypoints
@@ -283,8 +286,9 @@ class SimpleDockingNode(Node):
         
         # Define your waypoints here (x, y, yaw)
         waypoints = [
-            (5.0, 1.0, 0.0),      # Waypoint 1
-            (0.0, 3.0, 0.0),      # Waypoint 2
+            # (5.0, 1.0, 0.0),      # Waypoint 1
+            # (0.0, 3.0, 0.0),      # Waypoint 2
+            (0.0, 1.0, 0.0),      # Waypoint REAL ROBOT
         ]
         
         self.follow_waypoints(waypoints)

@@ -14,7 +14,7 @@
         <xacro:unless value="$(arg is_sim)">
             <hardware>
                 <plugin>mechabot_firmware/MechabotInterface</plugin>
-                <param name="port">/dev/ttyUSB0</param>
+                <param name="port">/dev/ttyUSB1</param>
             </hardware>
         </xacro:unless>
 

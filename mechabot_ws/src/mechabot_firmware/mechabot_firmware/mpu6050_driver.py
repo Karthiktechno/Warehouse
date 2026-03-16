@@ -3,9 +3,11 @@ import rclpy.time
 import smbus
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data #Reliability Best Effort Durability Volatile History Keep Last Depth 5
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Imu
-from collections import deque  # Added for moving average filter
+from collections import deque
+from tf_transformations import quaternion_from_euler
+import numpy as np
 
 # MPU6050 Register Addresses
 PWR_MGMT_1   = 0x6B
@@ -47,6 +49,9 @@ class MPU6050_Driver(Node):
         self.gyro_y_buffer = deque(maxlen=self.window_size)
         self.gyro_z_buffer = deque(maxlen=self.window_size)
 
+        # Yaw integration
+        self.yaw = 0.0
+
     def moving_average(self, buffer, new_value):
         buffer.append(new_value)
         return sum(buffer) / len(buffer)
@@ -74,13 +79,33 @@ class MPU6050_Driver(Node):
             gyro_y_avg = self.moving_average(self.gyro_y_buffer, gyro_y)
             gyro_z_avg = self.moving_average(self.gyro_z_buffer, gyro_z)
             
-            # Convert to proper units and populate message
+            # Convert gyro to rad/s
+            gyro_z_rad = gyro_z_avg / 7509.55
+            
+            # Integrate gyroscope Z to get yaw
+            self.yaw += gyro_z_rad * self.frequency_
+            
+            # Normalize yaw to -pi to pi
+            self.yaw = np.arctan2(np.sin(self.yaw), np.cos(self.yaw))
+            
+            # Convert yaw to quaternion
+            q = quaternion_from_euler(0.0, 0.0, self.yaw)
+            
+            # Populate orientation
+            self.imu_msg_.orientation.x = q[0]
+            self.imu_msg_.orientation.y = q[1]
+            self.imu_msg_.orientation.z = q[2]
+            self.imu_msg_.orientation.w = q[3]
+            
+            # Populate linear acceleration
             self.imu_msg_.linear_acceleration.x = acc_x_avg / 1670.13
             self.imu_msg_.linear_acceleration.y = acc_y_avg / 1670.13
             self.imu_msg_.linear_acceleration.z = acc_z_avg / 1670.13
+            
+            # Populate angular velocity
             self.imu_msg_.angular_velocity.x = gyro_x_avg / 7509.55
             self.imu_msg_.angular_velocity.y = gyro_y_avg / 7509.55
-            self.imu_msg_.angular_velocity.z = gyro_z_avg / 7509.55
+            self.imu_msg_.angular_velocity.z = gyro_z_rad
 
             self.imu_msg_.header.stamp = self.get_clock().now().to_msg()
             self.imu_pub_.publish(self.imu_msg_)
