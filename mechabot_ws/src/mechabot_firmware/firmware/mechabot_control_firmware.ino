@@ -72,7 +72,7 @@ void setup() {
   // rightMotor.SetOutputLimits(0, 150);  
   // leftMotor.SetOutputLimits(0, 150);   
 
-  Serial.begin(115200);
+  Serial.begin(500000);  
 
   // Init encoders
   pinMode(right_encoder_phaseA, INPUT_PULLUP);
@@ -192,8 +192,12 @@ void loop() {
       left_wheel_cmd = 0.0;
     }
 
-    String encoder_read = "r" + right_wheel_sign + String(right_wheel_meas_vel) + ",l" + left_wheel_sign + String(left_wheel_meas_vel) + ",";
-    Serial.println(encoder_read);
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "r%s%05.2f,l%s%05.2f,",
+             right_wheel_sign.c_str(), abs(right_wheel_meas_vel),
+             left_wheel_sign.c_str(), abs(left_wheel_meas_vel));
+    Serial.println(buffer);
+    
     last_millis = current_millis;
     right_encoder_counter = 0;
     left_encoder_counter = 0;

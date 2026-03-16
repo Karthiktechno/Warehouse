@@ -10,7 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     use_slam = LaunchConfiguration("use_slam")
-    serial_port = LaunchConfiguration("serial_port") #Port for RPLidar
+    serial_port = LaunchConfiguration("serial_port") #Port for ESP32
     map_name = LaunchConfiguration("map_name")
 
     use_slam_arg = DeclareLaunchArgument(
@@ -59,7 +59,6 @@ def generate_launch_description():
         }],
         output="screen"
     )
-
 
     controller = IncludeLaunchDescription(
         os.path.join(
@@ -139,8 +138,8 @@ def generate_launch_description():
         controller,
         joystick,
         imu_driver_node,
-        lcd_driver_node,
-        ultrasonic_driver_node,
+        # lcd_driver_node,
+        # ultrasonic_driver_node,
         localization,
         slam,
         navigation,

@@ -1,6 +1,7 @@
 controller_manager:
   ros__parameters:
     update_rate: 100 #Hz
+    activation_timeout: 15.0  # Increase from default 5.0
 
     wheel_controller:
       type: diff_drive_controller/DiffDriveController
@@ -13,6 +14,7 @@ wheel_controller:
     type: diff_drive_controller/DiffDriveController
 
     use_stamped_vel: false
+    position_feedback: false
     left_wheel_names  : ['left_wheel_joint']
     right_wheel_names : ['right_wheel_joint']
 

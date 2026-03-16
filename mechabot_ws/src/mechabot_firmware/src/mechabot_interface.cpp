@@ -137,31 +137,50 @@ CallbackReturn MechabotInterface::on_deactivate(const rclcpp_lifecycle::State &)
 hardware_interface::return_type MechabotInterface::read(const rclcpp::Time &,
                                                           const rclcpp::Duration &)
 {
-  // Interpret the string
+  // Only try to read if data is available
   if(esp_.IsDataAvailable())
   {
     auto dt = (rclcpp::Clock().now() - last_run_).seconds();
     std::string message;
-    esp_.ReadLine(message);
-    std::stringstream ss(message);
-    std::string res;
-    int multiplier = 1;
-    while(std::getline(ss, res, ','))
+    
+    try
     {
-      multiplier = res.at(1) == 'p' ? 1 : -1;
+      // Use ReadLine with timeout (in milliseconds)
+      esp_.ReadLine(message, '\n', 100);  // 100ms timeout
+      
+      // Only process if we got a complete message
+      if(!message.empty())
+      {
+        std::stringstream ss(message);
+        std::string res;
+        int multiplier = 1;
+        while(std::getline(ss, res, ','))
+        {
+          if(res.length() < 2) continue;  // Safety check
+          
+          multiplier = res.at(1) == 'p' ? 1 : -1;
 
-      if(res.at(0) == 'r')
-      {
-        velocity_states_.at(0) = multiplier * std::stod(res.substr(2, res.size()));
-        position_states_.at(0) += velocity_states_.at(0) * dt;
-      }
-      else if(res.at(0) == 'l')
-      {
-        velocity_states_.at(1) = multiplier * std::stod(res.substr(2, res.size()));
-        position_states_.at(1) += velocity_states_.at(1) * dt;
+          if(res.at(0) == 'r')
+          {
+            velocity_states_.at(0) = multiplier * std::stod(res.substr(2, res.size()));
+            position_states_.at(0) += velocity_states_.at(0) * dt;
+          }
+          else if(res.at(0) == 'l')
+          {
+            velocity_states_.at(1) = multiplier * std::stod(res.substr(2, res.size()));
+            position_states_.at(1) += velocity_states_.at(1) * dt;
+          }
+        }
+        last_run_ = rclcpp::Clock().now();
       }
     }
-    last_run_ = rclcpp::Clock().now();
+    catch(const std::exception& e)
+    {
+      static auto logger = rclcpp::get_logger("MechabotInterface");
+      static auto clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+      RCLCPP_WARN_THROTTLE(logger, *clock, 1000, 
+                           "Failed to read from serial: %s", e.what());
+    }
   }
   return hardware_interface::return_type::OK;
 }
