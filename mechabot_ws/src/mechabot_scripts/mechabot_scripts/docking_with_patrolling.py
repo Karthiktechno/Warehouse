@@ -263,7 +263,7 @@ class SimpleDockingNode(Node):
         # Set initial pose (robot starts in dock)
         self.get_logger().info("\n[SETUP] Setting initial pose")
         self.initial_x = 0.0 #1.5
-        self.initial_y = 0.4 #5.18
+        self.initial_y = 0.0 #5.18
         self.initial_yaw = 0.0 #1.57
         self.set_initial_pose(self.initial_x, self.initial_y, self.initial_yaw)
         time.sleep(2)
@@ -276,7 +276,8 @@ class SimpleDockingNode(Node):
         # Step 2: Rotate 180 degrees
         self.get_logger().info("\n[STEP 2] Rotating 180 degrees")
         initial_yaw = self.yaw
-        target_yaw = initial_yaw + np.pi  # Add 180 degrees
+        # target_yaw = initial_yaw + np.pi  # Add 180 degrees
+        target_yaw = 0.261799  #HW Tweak 15 degrees
         target_yaw = np.arctan2(np.sin(target_yaw), np.cos(target_yaw))  # Normalize
         self.rotate_to_angle(-target_yaw) #-ve for HW
         time.sleep(1)
