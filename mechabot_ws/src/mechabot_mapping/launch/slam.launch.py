@@ -66,7 +66,5 @@ def generate_launch_description():
     return LaunchDescription([
         use_sim_time_arg,
         slam_config_arg,
-        nav2_map_saver,
         slam_toolbox,
-        nav2_lifecycle_manager,
     ])

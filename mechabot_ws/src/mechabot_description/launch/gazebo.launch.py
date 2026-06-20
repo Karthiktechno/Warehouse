@@ -37,11 +37,18 @@ def generate_launch_description():
     gazebo_resource_path = SetEnvironmentVariable(
         "GZ_SIM_RESOURCE_PATH",
         model_path
-        )
+    )
+
+    ign_gazebo_resource_path = SetEnvironmentVariable(
+        "IGN_GAZEBO_RESOURCE_PATH",
+        model_path
+    )
 
     robot_description = ParameterValue(Command([
             "xacro ",
+            "'",
             LaunchConfiguration("model"),
+            "'",
             " is_sim:=True",
         ]),
         value_type=str
@@ -58,7 +65,7 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource([os.path.join(
                     get_package_share_directory("ros_gz_sim"), "launch"), "/gz_sim.launch.py"]),
                 launch_arguments={
-                    "gz_args": PythonExpression(["'", world_path, " -v 4 -r'"])
+                    "gz_args": ['"', world_path, '" -v 4 -r']
                 }.items()
              )
 
@@ -104,6 +111,7 @@ def generate_launch_description():
         model_arg,
         world_name_arg,
         gazebo_resource_path,
+        ign_gazebo_resource_path,
         robot_state_publisher_node,
         gazebo,
         gz_spawn_entity,

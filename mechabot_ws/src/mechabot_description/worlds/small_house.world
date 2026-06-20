@@ -48,12 +48,11 @@
     
     <!-- quick test ball for turtlebot3 -->
     <!-- 
-	<model name='Ball_01_002'>
-        <include>
-            <uri>model://aws_robomaker_residential_Ball_01</uri>
-        </include>
-        <pose frame=''>-3.665503 -0.4874 0.318684 0 -0 0</pose>
-	</model>
+	<include>
+      <name>Ball_01_002</name>
+      <uri>model://aws_robomaker_residential_Ball_01</uri>
+      <pose>-3.665503 -0.4874 0.318684 0 -0 0</pose>
+    </include>
     -->
 
     <!-- bedroom ball -->
