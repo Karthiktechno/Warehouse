@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo "Sourcing ROS 2 workspace..."
 source /opt/ros/humble/setup.bash
